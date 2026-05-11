@@ -1,0 +1,17 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "carotid-cfd"
+version = "0.2.0"
+description = "Pulsatile carotid artery CFD solver — dolfinx, rigid wall (4EM60)"
+requires-python = ">=3.10"
+dependencies = ["numpy", "meshio", "gmsh"]
+# dolfinx, petsc4py, mpi4py installed via conda / Docker
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+# Install in editable mode so examples resolve imports:
+#   pip install -e .

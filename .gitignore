@@ -1,0 +1,10 @@
+# Ignore these folders completely
+results_healthy/
+meshes/
+
+# Python cache
+__pycache__/
+*.pyc
+
+# build / packaging
+*.egg-info/
