@@ -29,19 +29,51 @@ build_mesh.py      (your existing Gmsh script — unchanged)
 
 ---
 
-## Install
+## Installation
+
+You can install using either Docker or Conda.
+
+---
+
+### Option 1 — Docker (recommended)
+
+Pull the official FEniCSx image:
 
 ```bash
-# FEniCSx via Docker (recommended)
 docker pull dolfinx/dolfinx:stable
-
-# Or conda
-conda create -n fenicsx -c conda-forge fenics-dolfinx
-conda activate fenicsx
-
-pip install -e .   # install carotid_cfd package
 ```
 
+Run the container inside your project folder:
+
+```bash
+docker run -ti --rm \
+  -v $(pwd):/workspace \
+  -w /workspace \
+  dolfinx/dolfinx:stable
+```
+
+Inside the container,install the project:
+```bash
+pip install -e .
+```
+
+### option 2 -- Conda
+
+Create the environment from the provided file:
+```bash
+conda env create -f environment.yml
+```
+Activate the environment:
+
+```bash
+conda activate dolfinx-env
+```
+The package is already installed in editable mode via the environment configuration.
+If needed, you can reinstall manually:
+
+```bash
+pip install -e .
+```
 ---
 
 ## Workflow

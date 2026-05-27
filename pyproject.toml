@@ -7,7 +7,14 @@ name = "carotid-cfd"
 version = "0.2.0"
 description = "Pulsatile carotid artery CFD solver — dolfinx, rigid wall (4EM60)"
 requires-python = ">=3.10"
-dependencies = ["numpy", "meshio", "gmsh"]
+
+dependencies = [
+    "numpy>=1.24",
+    "meshio",
+    "gmsh",
+    "matplotlib",
+    "h5py"
+]
 # dolfinx, petsc4py, mpi4py installed via conda / Docker
 
 [tool.setuptools.packages.find]

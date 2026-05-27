@@ -1,0 +1,13 @@
+name: dolfinx-env
+channels:
+  - conda-forge
+dependencies:
+  - python=3.10
+  - fenics-dolfinx
+  - gmsh
+  - meshio
+  - h5py
+  - matplotlib
+  - pip
+  - pip:
+      - -e . # install local package in editable mode
