@@ -2,7 +2,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 
 # --- load data ---
-file_name = "results_healthy/flow_monitor.csv"   # change this
+file_name = "results_50pct/flow_monitor.csv"   # change this
 
 # your data looks whitespace-separated, so use:
 df = pd.read_csv(file_name, sep=",")

@@ -16,7 +16,8 @@ from pathlib import Path
 from carotid_cfd import (SimulationConfig, GeometryParameters,
                           SolverConfig, run_simulation)
 
-DELTAS = [0.0, 0.3, 0.5, 0.7]
+DELTAS = [0.5]
+
 
 def main():
     mmHg    = 133.322
@@ -24,7 +25,7 @@ def main():
 
     for delta in DELTAS:
         pct = int(round(delta * 100))
-        mesh_file = Path(f"carotid_{pct:02d}pct.xdmf")
+        mesh_file = Path(f"meshes/stenosis_{pct:02d}pct/carotid_{pct:02d}pct.xdmf")
 
         if not mesh_file.exists():
             print(f"[skip] {mesh_file} not found")
@@ -32,7 +33,7 @@ def main():
 
         cfg = SimulationConfig(
             geometry   = GeometryParameters(stenosis_severity=delta),
-            solver     = SolverConfig(dt=5e-4, t_end=3.0, output_interval=20),
+            solver     = SolverConfig(dt=5e-4, t_end=3.0, output_interval=10),
             mesh_file  = mesh_file,
             output_dir = Path(f"results_{pct:02d}pct"),
         )

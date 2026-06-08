@@ -22,7 +22,7 @@ Find (v^{n+1}, p^{n+1}) in V x Q such that for all (w, q) in V_0 x Q:
   + int_Omega  w . (v^{n+1} . nabla v^{n+1})  dx        <- fully nonlinear
   + int_Omega  2 nu  epsilon(v^{n+1}) : epsilon(w)  dx
   - int_Omega  p^{n+1}  nabla . w  dx
-  + int_Omega  q  nabla . v^{n+1}  dx
+  - int_Omega  q  nabla . v^{n+1}  dx
   = 0
 
 where epsilon(v) = sym(nabla v) = (nabla v + (nabla v)^T) / 2.
@@ -62,7 +62,7 @@ import ufl
 from ufl import (
     split, TestFunctions,
     inner, dot, div, nabla_grad, sym, grad,
-    dx, derivative,
+    Measure, derivative,
 )
 
 from carotid_cfd.config import SimulationConfig
@@ -101,9 +101,11 @@ class NavierStokesForm:
         cfg:        SimulationConfig,
     ):
         W   = spaces["W"]
+        V   = spaces["V"]
         nu  = cfg.fluid.nu      # kinematic viscosity  [m^2/s]  = mu/rho
         dt  = cfg.solver.dt
         th  = cfg.solver.theta  # theta=0.5: Crank-Nicolson, theta=1: implicit Euler
+        dx = Measure('dx', domain=mesh)
 
         # ── Mixed solution function: the Newton solver iterates on this ───────
         self.u_p = fem.Function(W)
@@ -115,7 +117,7 @@ class NavierStokesForm:
         u_new, p = split(self.u_p)
 
         # ── Test functions ────────────────────────────────────────────────────
-        w, q = TestFunctions(W)
+        w, q = ufl.TestFunctions(W)
 
         # ── Crank-Nicolson weighted velocity ──────────────────────────────────
         # theta=0.5: average of new and old  (2nd order, unconditionally stable)
@@ -141,7 +143,7 @@ class NavierStokesForm:
         # Continuity:  int q  nabla . u_new  dx
         # Note: use u_new (not u_theta) for the continuity constraint —
         # this enforces incompressibility at t^{n+1} exactly.
-        F_cont = dot(q, div(u_new)) * dx
+        F_cont = +dot(q, div(u)) * dx
 
         # ── Total residual ────────────────────────────────────────────────────
         self.F = F_time + F_conv + F_diff + F_pres + F_cont

@@ -13,7 +13,7 @@ from carotid_cfd import SimulationConfig, GeometryParameters, SolverConfig, run_
 def main():
     cfg = SimulationConfig(
         geometry   = GeometryParameters(stenosis_severity=0.0),
-        solver     = SolverConfig(dt=5e-2, t_end=3.0, output_interval=20),
+        solver     = SolverConfig(dt=5e-2, t_end=3.0, output_interval=5),
         mesh_file  = Path("meshes/healthy/carotid.xdmf"),
         output_dir = Path("results_healthy"),
 

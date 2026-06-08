@@ -128,45 +128,45 @@ class SolverConfig:
     Newton convergence is checked on the *absolute* residual norm,
     which is mesh-independent unlike the relative norm.
     """
-    # # Time stepping
-    # dt:    float = 5.0e-4   # s    timestep
-    # t_end: float = 3.0      # s    total simulation time
-    # theta: float = 0.5      # θ    Crank–Nicolson weight
+    # Time stepping
+    dt:    float = 5.0e-4   # s    timestep
+    t_end: float = 3.0      # s    total simulation time
+    theta: float = 0.5      # θ    Crank–Nicolson weight
 
-    # # Newton iteration
-    # newton_max_iter: int   = 25
-    # newton_abs_tol:  float = 1.0e-8
-    # newton_rel_tol:  float = 1.0e-6
+    # Newton iteration
+    newton_max_iter: int   = 100
+    newton_abs_tol:  float = 1.0e-8
+    newton_rel_tol:  float = 1.0e-6
 
-    # # Krylov linear solver (inner loop of Newton)
-    # # "gmres" + "ilu"  works well for moderate mesh sizes (serial)
-    # # "gmres" + "hypre_amg"  recommended for large/parallel runs
-    # ksp_type:    str   = "gmres"
-    # pc_type:     str   = "ilu"
-    # ksp_rtol:    float = 1.0e-8
-    # ksp_atol:    float = 1.0e-10
-    # ksp_max_it:  int   = 500
+    # Krylov linear solver (inner loop of Newton)
+    # "gmres" + "ilu"  works well for moderate mesh sizes (serial)
+    # "gmres" + "hypre_amg"  recommended for large/parallel runs
+    ksp_type:    str   = "preonly"
+    pc_type:     str   = "lu"
+    ksp_rtol:    float = 1.0e-6
+    ksp_atol:    float = 1.0e-8
+    ksp_max_it:  int   = 500
 
-    # # Output
-    # output_interval: int = 10   # write XDMF every N timesteps
+    # Output
+    output_interval: int = 10   # write XDMF every N timesteps
     
-    dt: float = 2.0e-3
-    t_end: float = 0.2
-    theta: float = 0.5
+    # dt: float = 2.0e-3
+    # t_end: float = 0.2
+    # theta: float = 0.5
 
-    # Easier Newton convergence
-    newton_abs_tol: float = 1e-4
-    newton_rel_tol: float = 1e-2
-    newton_max_iter: int = 5
+    # # Easier Newton convergence
+    # newton_abs_tol: float = 1e-4
+    # newton_rel_tol: float = 1e-2
+    # newton_max_iter: int = 5
 
-    # Faster linear solves
-    ksp_type:    str = "gmres"
-    pc_type:     str = "ilu"
-    ksp_rtol:    float = 1e-4
-    ksp_atol:    float = 1e-6
-    ksp_max_it:  int = 50
+    # # Faster linear solves
+    # ksp_type:    str = "gmres"
+    # pc_type:     str = "ilu"
+    # ksp_rtol:    float = 1e-4
+    # ksp_atol:    float = 1e-6
+    # ksp_max_it:  int = 50
 
-    output_interval: int = 10
+    # output_interval: int = 10
 
 @dataclass
 class SimulationConfig:

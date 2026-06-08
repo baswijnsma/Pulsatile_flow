@@ -579,13 +579,17 @@ def generate_and_export(cfg: MeshConfig) -> None:
     model.mesh.optimize("Netgen")
     print("[mesh] Done.")
 
-    msh_path = str(cfg.output_stem) + ".msh"
-    gmsh.write(msh_path)
-    print(f"[mesh] Written: {msh_path}")
+    output_path = Path(cfg.output_stem).with_suffix(".msh")
+
+    # ensure directory exists
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+
+    gmsh.write(str(output_path))
+    print(f"[mesh] Written: {output_path}")
     gmsh.finalize()
 
     print("[mesh] Converting to XDMF (mm → m) …")
-    _msh_to_xdmf(msh_path, cfg)
+    _msh_to_xdmf(str(output_path), cfg)
 
 
 def _msh_to_xdmf(msh_path: str, cfg: MeshConfig) -> None:
@@ -732,8 +736,10 @@ def _parse_args() -> argparse.Namespace:
                    help="Axial position of plaque along branch [mm]")
     p.add_argument("--angle",      type=float, default=0.0,
                    help="Circumferential placement angle [°]  (0=top)")
-    p.add_argument("--lc",         type=float, default=1.2,
+    p.add_argument("--lc",         type=float, default=2.8,
                    help="Bulk element size [mm]")
+    p.add_argument("--debug",      action="store_true",
+                   help="Use a coarse debug mesh with much fewer elements")
     p.add_argument("--out",        type=str,   default="carotid",
                    help="Output file stem (no extension)")
     p.add_argument("--healthy",    action="store_true",
@@ -742,6 +748,7 @@ def _parse_args() -> argparse.Namespace:
                    help="Run mesh independence study (4 levels)")
     p.add_argument("--folder",     type=str, default="default",
                    help="Subfolder in meshes/ to save outputs")
+                   
     return p.parse_args()
 
 
@@ -759,13 +766,25 @@ def main() -> None:
         )
         plaques = [plaque]
 
+    if args.debug:
+        print("[build_mesh] Debug mode enabled: using coarse sizing for a smaller mesh.")
+        lc_bulk     = 3
+        lc_junction = 1.5
+        lc_plaque   = 0.8
+        lc_wall     = 0.9
+    else:
+        lc_bulk     = args.lc
+        lc_junction = args.lc * 0.4
+        lc_plaque   = args.lc * 0.2
+        lc_wall     = args.lc * 0.3
+
     cfg = MeshConfig(
         plaques_branch0 = plaques,
-        plaques_branch1 = plaques,   # same plaque on both branches by default
-        lc_bulk         = args.lc, #args.lc,
-        lc_junction     = args.lc * 0.4, #args.lc * 0.4,
-        lc_plaque       = args.lc * 0.2, #args.lc * 0.2,
-        lc_wall         = args.lc * 0.3, #args.lc * 0.3,
+        plaques_branch1 = [],   # same plaque on both branches by default
+        lc_bulk         = lc_bulk,
+        lc_junction     = lc_junction,
+        lc_plaque       = lc_plaque,
+        lc_wall         = lc_wall,
         output_stem     = Path(f'meshes/{args.folder}/{args.out}'),
     )
 

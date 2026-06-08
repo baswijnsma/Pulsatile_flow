@@ -123,7 +123,6 @@ def make_inlet_updater(
         # (sum of squared components on the non-flow axes)
         r2 = sum(x[i] ** 2 for i in range(3) if i != flow_dir)
         r  = np.sqrt(r2)
-
         # U(t) = ū + A sin(ω t)
         U_t = wave.velocity_at(state["t"])
 
@@ -195,6 +194,7 @@ class BoundaryConditions:
         # v = phi(x,y) * (u_bar + A sin(omega t)) * e_1   on Gamma_in
         # u_inlet lives in the COLLAPSED velocity space V.
         self.u_inlet = fem.Function(V, name="u_inlet")
+    
         self._updater = make_inlet_updater(
             self.u_inlet,
             cfg.waveform,
