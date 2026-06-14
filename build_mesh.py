@@ -186,6 +186,7 @@ class MeshConfig:
     lc_junction:  float = 0.5   # refined at Y-junction
     lc_plaque:    float = 0.25  # refined at plaque surface
     lc_wall:      float = 0.4   # near-wall refinement
+    lc_inlet:     float = 0.3
 
     # Output
     output_stem: Path = Path("carotid")
@@ -492,12 +493,14 @@ def identify_and_tag_boundaries(fluid_vol: int, cfg: MeshConfig) -> None:
     model.addPhysicalGroup(2, wall_s, WALL);      model.setPhysicalName(2, WALL,     "Wall")
     model.addPhysicalGroup(3, [fluid_vol], FLUID); model.setPhysicalName(3, FLUID,   "Fluid")
 
+    return inlet_s, out1_s, out2_s, wall_s
+
 
 # ════════════════════════════════════════════════════════════════════════════
 # 3.  MESH SIZING FIELDS
 # ════════════════════════════════════════════════════════════════════════════
 
-def add_refinement_fields(cfg: MeshConfig) -> None:
+def add_refinement_fields(cfg: MeshConfig, inlet_surfaces, outlet1_surfaces, outlet2_surfaces) -> None:
     """
     Add distance-based mesh refinement fields.
 
@@ -548,6 +551,42 @@ def add_refinement_fields(cfg: MeshConfig) -> None:
             field.setNumber(f_tp, "DistMin",  p.R_sphere * 0.5)
             field.setNumber(f_tp, "DistMax",  p.R_sphere * 3.0)
             all_thresh.append(f_tp)
+
+    # inlet refinement
+    f_d_in = field.add("Distance")
+    field.setNumbers(
+        f_d_in,
+        "FacesList",
+        inlet_surfaces
+    )
+
+    f_t_in = field.add("Threshold")
+    field.setNumber(f_t_in, "InField", f_d_in)
+    field.setNumber(f_t_in, "SizeMin", cfg.lc_inlet)
+    field.setNumber(f_t_in, "SizeMax", cfg.lc_bulk)
+    field.setNumber(f_t_in, "DistMin", 0.0)
+    field.setNumber(f_t_in, "DistMax", 5.0)
+
+    all_thresh.append(f_t_in)
+
+    # outlet refinement
+    outlet_surfaces = outlet1_surfaces + outlet2_surfaces
+
+    f_d_out = field.add("Distance")
+    field.setNumbers(
+        f_d_out,
+        "FacesList",
+        outlet_surfaces
+    )
+
+    f_t_out = field.add("Threshold")
+    field.setNumber(f_t_out, "InField", f_d_out)
+    field.setNumber(f_t_out, "SizeMin", cfg.lc_inlet)
+    field.setNumber(f_t_out, "SizeMax", cfg.lc_bulk)
+    field.setNumber(f_t_out, "DistMin", 0.0)
+    field.setNumber(f_t_out, "DistMax", 5.0)
+
+    all_thresh.append(f_t_out)
 
     # ── Combined minimum field ────────────────────────────────────────────────
     f_min = field.add("Min")
@@ -718,8 +757,8 @@ def _run_single(cfg: MeshConfig) -> None:
     cfg.describe_plaques()
 
     fluid_vol = build_geometry(cfg)
-    identify_and_tag_boundaries(fluid_vol, cfg)
-    add_refinement_fields(cfg)
+    inlet_s, out1_s, out2_s, wall_s = identify_and_tag_boundaries(fluid_vol, cfg)
+    add_refinement_fields(cfg, inlet_s, out1_s, out2_s)
     generate_and_export(cfg)
 
 
@@ -736,7 +775,7 @@ def _parse_args() -> argparse.Namespace:
                    help="Axial position of plaque along branch [mm]")
     p.add_argument("--angle",      type=float, default=0.0,
                    help="Circumferential placement angle [°]  (0=top)")
-    p.add_argument("--lc",         type=float, default=2.8,
+    p.add_argument("--lc",         type=float, default=4.0,
                    help="Bulk element size [mm]")
     p.add_argument("--debug",      action="store_true",
                    help="Use a coarse debug mesh with much fewer elements")
@@ -771,12 +810,14 @@ def main() -> None:
         lc_bulk     = 3
         lc_junction = 1.5
         lc_plaque   = 0.8
-        lc_wall     = 0.9
+        lc_wall     = 0.8
+        lc_inlet    = 0.8
     else:
         lc_bulk     = args.lc
         lc_junction = args.lc * 0.4
-        lc_plaque   = args.lc * 0.2
+        lc_plaque   = args.lc * 0.3
         lc_wall     = args.lc * 0.3
+        lc_inlet    = args.lc * 0.3
 
     cfg = MeshConfig(
         plaques_branch0 = plaques,
@@ -785,6 +826,7 @@ def main() -> None:
         lc_junction     = lc_junction,
         lc_plaque       = lc_plaque,
         lc_wall         = lc_wall,
+        lc_inlet        = lc_inlet,
         output_stem     = Path(f'meshes/{args.folder}/{args.out}'),
     )
 

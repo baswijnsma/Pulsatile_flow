@@ -9,9 +9,9 @@ import pyvista as pv
 # bnd_file = "meshes/healthy/carotid_boundaries.xdmf"
 # sub_file = "meshes/healthy/carotid_subdomains.xdmf"
 
-vol_file = "meshes/stenosis_00pct/carotid_00pct.xdmf"
-bnd_file = "meshes/stenosis_00pct/carotid_00pct_boundaries.xdmf"
-sub_file = "meshes/stenosis_00pct/carotid_00pct_subdomains.xdmf"
+vol_file = "meshes/stenosis_30pct/carotid_30pct.xdmf"
+bnd_file = "meshes/stenosis_30pct/carotid_30pct_boundaries.xdmf"
+sub_file = "meshes/stenosis_30pct/carotid_30pct_subdomains.xdmf"
 
 
 # -----------------------------

@@ -131,12 +131,12 @@ class SolverConfig:
     # Time stepping
     dt:    float = 5.0e-4   # s    timestep
     t_end: float = 3.0      # s    total simulation time
-    theta: float = 0.5      # θ    Crank–Nicolson weight
+    theta: float = 0.7      # θ    Crank–Nicolson weight
 
     # Newton iteration
     newton_max_iter: int   = 100
-    newton_abs_tol:  float = 1.0e-8
-    newton_rel_tol:  float = 1.0e-6
+    newton_abs_tol:  float = 1.0e-10
+    newton_rel_tol:  float = 1.0e-8
 
     # Krylov linear solver (inner loop of Newton)
     # "gmres" + "ilu"  works well for moderate mesh sizes (serial)

@@ -16,7 +16,7 @@ from pathlib import Path
 from carotid_cfd import (SimulationConfig, GeometryParameters,
                           SolverConfig, run_simulation)
 
-DELTAS = [0.5]
+DELTAS = [ 0.0]
 
 
 def main():
@@ -33,7 +33,7 @@ def main():
 
         cfg = SimulationConfig(
             geometry   = GeometryParameters(stenosis_severity=delta),
-            solver     = SolverConfig(dt=5e-4, t_end=3.0, output_interval=10),
+            solver     = SolverConfig(dt=1e-3, t_end=3.0, output_interval=100),
             mesh_file  = mesh_file,
             output_dir = Path(f"results_{pct:02d}pct"),
         )

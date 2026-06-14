@@ -13,7 +13,7 @@ dependencies = [
     "meshio",
     "gmsh",
     "matplotlib",
-    "h5py"
+    "h5py",
 ]
 # dolfinx, petsc4py, mpi4py installed via conda / Docker
 

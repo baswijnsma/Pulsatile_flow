@@ -239,16 +239,16 @@ def run_simulation(cfg: SimulationConfig) -> FlowMonitor:
     # For very large meshes (>1M DOFs), switch ksp_type to "gmres" + pc to "hypre"
     petsc_options = {
         "snes_type":                    "newtonls",
-        "snes_rtol":                    1.0e-6,      # Tighter than default 1e-6
-        "snes_atol":                    1.0e-8,     # Tighter than default 1e-8
-        "snes_max_it":                  200,         # More iterations allowed
+        "snes_rtol":                    cfg.solver.newton_rel_tol,      # Tighter than default 1e-6
+        "snes_atol":                    cfg.solver.newton_abs_tol,     # Tighter than default 1e-8
+        "snes_max_it":                  cfg.solver.newton_max_iter,         # More iterations allowed
         "snes_linesearch_type":         "bt",        # Backtracking (critical fix)
         "ksp_type":                     cfg.solver.ksp_type,
         "pc_type":                      cfg.solver.pc_type,
         "pc_factor_mat_solver_type":    "mumps",
-        "ksp_rtol":                     1.0e-8,      # Tighter than default 1e-6
-        "ksp_atol":                     1.0e-10,     # Tighter than default 1e-8
-        "ksp_max_it":                   500,        # More iterations
+        # "ksp_rtol":                     1.0e-8,      # Tighter than default 1e-6
+        # "ksp_atol":                     1.0e-10,     # Tighter than default 1e-8
+        # "ksp_max_it":                   500,        # More iterations
     }
 
     # ── Time loop ─────────────────────────────────────────────────────────────
@@ -283,6 +283,9 @@ def run_simulation(cfg: SimulationConfig) -> FlowMonitor:
             petsc_options=petsc_options, petsc_options_prefix="stenosis"
         )
         problem.solve()
+        opts = problem.solver.getConvergedReason()
+        if opts < 0:
+            print("SNES reason:", opts)
 
         # ── Advance solution: u_previous <- velocity part of u_p ─────────────
         # WV_map maps the velocity DOF indices in W to indices in V.
